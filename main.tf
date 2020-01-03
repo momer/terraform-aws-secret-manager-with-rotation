@@ -82,8 +82,8 @@ resource "aws_security_group" "lambda" {
   }
 }
 
-variable "filename" { default = "rotate-code-mysql"}
-resource "aws_lambda_function" "rotate-code-mysql" {
+variable "filename" { default = "rotate-code-postgres"}
+resource "aws_lambda_function" "rotate-code-postgres" {
   filename           = "${path.module}/${var.filename}.zip"
   function_name      = "${var.name}-${var.filename}"
   role               = "${aws_iam_role.lambda_rotation.arn}"
@@ -104,11 +104,12 @@ resource "aws_lambda_function" "rotate-code-mysql" {
 }
 
 resource "aws_lambda_permission" "allow_secret_manager_call_Lambda" {
-    function_name = "${aws_lambda_function.rotate-code-mysql.function_name}"
+    function_name = "${aws_lambda_function.rotate-code-postgres.function_name}"
     statement_id = "AllowExecutionSecretManager"
     action = "lambda:InvokeFunction"
     principal = "secretsmanager.amazonaws.com"
 }
+
 /* not yet available
 data "aws_iam_policy_document" "kms" {
   statement {
@@ -228,13 +229,11 @@ resource "aws_kms_alias" "secret" {
   target_key_id = "${aws_kms_key.secret.key_id}"
 }
 
-
-
 resource "aws_secretsmanager_secret" "secret" {
   description         = "${var.secret_description}"
   kms_key_id          = "${aws_kms_key.secret.key_id}"
   name                = "${var.name}"
-  rotation_lambda_arn = "${aws_lambda_function.rotate-code-mysql.arn}"
+  rotation_lambda_arn = "${aws_lambda_function.rotate-code-postgres.arn}"
   rotation_rules {
     automatically_after_days = "${var.rotation_days}"
   }
@@ -251,13 +250,13 @@ resource "aws_secretsmanager_secret_version" "secret" {
   secret_id     = "${aws_secretsmanager_secret.secret.id}"
   secret_string = <<EOF
 {
-  "username": "${var.mysql_username}",
-  "engine": "mysql",
-  "dbname": "${var.mysql_dbname}",
-  "host": "${var.mysql_host}",
-  "password": "${var.mysql_password}",
-  "port": ${var.mysql_port},
-  "dbInstanceIdentifier": "${var.mysql_dbInstanceIdentifier}"
+  "username": "${var.postgres_username}",
+  "engine": "postgres",
+  "dbname": "${var.postgres_dbname}",
+  "host": "${var.postgres_host}",
+  "password": "${var.postgres_password}",
+  "port": ${var.postgres_port},
+  "dbInstanceIdentifier": "${var.postgres_dbInstanceIdentifier}"
 }
 EOF
 }
