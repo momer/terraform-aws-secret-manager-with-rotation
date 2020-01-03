@@ -24,7 +24,8 @@ EOF
 
 resource "aws_iam_policy_attachment" "lambdabasic" {
   name       = "${var.name}-lambdabasic"
-  roles      = [aws_iam_role.lambda_rotation.name]
+  roles      = [
+    aws_iam_role.lambda_rotation.name]
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
@@ -61,11 +62,16 @@ resource "aws_iam_policy" "SecretsManagerRDSMySQLRotationSingleUserRolePolicy" {
   policy = data.aws_iam_policy_document.SecretsManagerRDSMySQLRotationSingleUserRolePolicy.json
 }
 
-
 resource "aws_iam_policy_attachment" "SecretsManagerRDSMySQLRotationSingleUserRolePolicy" {
   name       = "${var.name}-SecretsManagerRDSMySQLRotationSingleUserRolePolicy"
-  roles      = [aws_iam_role.lambda_rotation.name]
+  roles      = [
+    aws_iam_role.lambda_rotation.name]
   policy_arn = aws_iam_policy.SecretsManagerRDSMySQLRotationSingleUserRolePolicy.arn
+}
+
+resource "aws_iam_role_policy_attachment" "AWSLambdaVPCAccessExecutionRole" {
+  role       = aws_iam_role.lambda_rotation.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
 resource "aws_security_group" "lambda" {
@@ -92,10 +98,11 @@ resource "aws_lambda_function" "rotate-code-postgres" {
   runtime            = "python2.7"
   vpc_config {
     subnet_ids         = var.subnets_lambda
-    security_group_ids = [aws_security_group.lambda.id]
+    security_group_ids = [
+      aws_security_group.lambda.id]
   }
   timeout            = 30
-  description        = "Conducts an AWS SecretsManager secret rotation for RDS MySQL using single user rotation scheme"
+  description        = "Conducts an AWS SecretsManager secret rotation for RDS Postgres using single user rotation scheme"
   environment {
     variables = { #https://docs.aws.amazon.com/general/latest/gr/rande.html#asm_region
       SECRETS_MANAGER_ENDPOINT = "https://secretsmanager.${data.aws_region.current.name}.amazonaws.com"
