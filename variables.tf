@@ -13,7 +13,7 @@ variable "rotation_days" {
 }
 
 variable "subnets_lambda" {
-  type = "list"
+  type = list(string)
   description = "The subnets where the Lambda Function will be run"
 }
 
