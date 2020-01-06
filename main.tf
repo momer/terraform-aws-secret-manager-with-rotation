@@ -214,17 +214,19 @@ resource "aws_kms_key" "secret" {
 POLICY
 }
 
-
-
 resource "aws_kms_alias" "secret" {
   name          = "alias/${var.name}"
   target_key_id = aws_kms_key.secret.key_id
 }
 
+resource "random_id" "db_snapshot" {
+  byte_length = 8
+}
+
 resource "aws_secretsmanager_secret" "secret" {
   description         = var.secret_description
   kms_key_id          = aws_kms_key.secret.key_id
-  name                = var.name
+  name                = "${var.name}-${random_id.db_snapshot.hex}"
   rotation_lambda_arn = aws_lambda_function.rotate-code-postgres.arn
   rotation_rules {
     automatically_after_days = var.rotation_days
