@@ -12,6 +12,11 @@ variable "rotation_days" {
   description = "How often in days the secret will be rotated"
 }
 
+variable "security_group_ids" {
+  type = list(string)
+  description = "The security gruops where the Lambda Function will be run"
+}
+
 variable "subnets_lambda" {
   type = list(string)
   description = "The subnets where the Lambda Function will be run"

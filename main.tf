@@ -74,20 +74,6 @@ resource "aws_iam_role_policy_attachment" "AWSLambdaVPCAccessExecutionRole" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
 
-resource "aws_security_group" "lambda" {
-    vpc_id = data.aws_subnet.firstsub.vpc_id
-    name = "${var.name}-Lambda-SecretManager"
-    tags = {
-        Name  = "${var.name}-Lambda-SecretManager"
-    }
-    egress {
-        from_port       = 0
-        to_port         = 0
-        protocol        = "-1"
-        cidr_blocks     = ["0.0.0.0/0"]
-  }
-}
-
 variable "filename" { default = "rotate-code-postgres"}
 resource "aws_lambda_function" "rotate-code-postgres" {
   filename           = "${path.module}/${var.filename}.zip"
@@ -98,8 +84,7 @@ resource "aws_lambda_function" "rotate-code-postgres" {
   runtime            = "python2.7"
   vpc_config {
     subnet_ids         = var.subnets_lambda
-    security_group_ids = [
-      aws_security_group.lambda.id]
+    security_group_ids = [var.security_group_ids]
   }
   timeout            = 30
   description        = "Conducts an AWS SecretsManager secret rotation for RDS Postgres using single user rotation scheme"
