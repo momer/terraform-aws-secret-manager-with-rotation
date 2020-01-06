@@ -84,7 +84,7 @@ resource "aws_lambda_function" "rotate-code-postgres" {
   runtime            = "python2.7"
   vpc_config {
     subnet_ids         = var.subnets_lambda
-    security_group_ids = [var.security_group_ids]
+    security_group_ids = var.security_group_ids
   }
   timeout            = 30
   description        = "Conducts an AWS SecretsManager secret rotation for RDS Postgres using single user rotation scheme"
