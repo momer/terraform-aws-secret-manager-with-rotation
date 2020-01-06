@@ -23,7 +23,7 @@ variable "subnets_lambda" {
 }
 
 variable "postgres_username" {
-  description = "The MySQL/Aurora username you chose during RDS creation or another one that you want to rotate"
+  description = "The Postgres username you chose during RDS creation or another one that you want to rotate"
 }
 
 variable "postgres_dbname" {
@@ -40,7 +40,7 @@ variable "postgres_password" {
 
 variable "postgres_port" {
   default = 5432
-  description = "In case you don't have your MySQL on default port and you need to change it"
+  description = "In case you don't have your Postgres on default port and you need to change it"
 }
 
 variable "postgres_dbInstanceIdentifier" {

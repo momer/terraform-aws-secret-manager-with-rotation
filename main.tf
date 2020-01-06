@@ -29,7 +29,7 @@ resource "aws_iam_policy_attachment" "lambdabasic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
-data "aws_iam_policy_document" "SecretsManagerRDSMySQLRotationSingleUserRolePolicy" {
+data "aws_iam_policy_document" "SecretsManagerRDSPostgresRotationSingleUserRolePolicy" {
   statement {
     actions = [
       "ec2:CreateNetworkInterface",
@@ -56,17 +56,17 @@ data "aws_iam_policy_document" "SecretsManagerRDSMySQLRotationSingleUserRolePoli
   }
 }
 
-resource "aws_iam_policy" "SecretsManagerRDSMySQLRotationSingleUserRolePolicy" {
-  name   = "${var.name}-SecretsManagerRDSMySQLRotationSingleUserRolePolicy"
+resource "aws_iam_policy" "SecretsManagerRDSPostgresRotationSingleUserRolePolicy" {
+  name   = "${var.name}-SecretsManagerRDSPostgresRotationSingleUserRolePolicy"
   path   = "/"
-  policy = data.aws_iam_policy_document.SecretsManagerRDSMySQLRotationSingleUserRolePolicy.json
+  policy = data.aws_iam_policy_document.SecretsManagerRDSPostgresRotationSingleUserRolePolicy.json
 }
 
-resource "aws_iam_policy_attachment" "SecretsManagerRDSMySQLRotationSingleUserRolePolicy" {
-  name       = "${var.name}-SecretsManagerRDSMySQLRotationSingleUserRolePolicy"
+resource "aws_iam_policy_attachment" "SecretsManagerRDSPostgresRotationSingleUserRolePolicy" {
+  name       = "${var.name}-SecretsManagerRDSPostgresRotationSingleUserRolePolicy"
   roles      = [
     aws_iam_role.lambda_rotation.name]
-  policy_arn = aws_iam_policy.SecretsManagerRDSMySQLRotationSingleUserRolePolicy.arn
+  policy_arn = aws_iam_policy.SecretsManagerRDSPostgresRotationSingleUserRolePolicy.arn
 }
 
 resource "aws_iam_role_policy_attachment" "AWSLambdaVPCAccessExecutionRole" {
